@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
   <jar>C:\Users\Administrator\Downloads\windows-service-tool-1.0.jar</jar>
-  <outfile>c:\fusion-4.0.1\windows-service-tool.exe</outfile>
+  <outfile>C:\Users\Administrator\Downloads\windows-service-tool.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

@@ -238,9 +238,6 @@ namespace winsw
                 startarguments += " " + _descriptor.Arguments;
             }
 
-            LogEvent("Starting " + _descriptor.Executable + ' ' + startarguments);
-            Log.Info("Starting " + _descriptor.Executable + ' ' + startarguments);
-
             // Load and start extensions
             ExtensionManager.LoadExtensions();
             ExtensionManager.FireOnWrapperStarted();
@@ -250,6 +247,7 @@ namespace winsw
 
             LogHandler executableLogHandler = CreateExecutableLogHandler();
             StartProcess(_process, startarguments, _descriptor.Executable, executableLogHandler, true);
+
             ExtensionManager.FireOnProcessStarted(_process);
 
             _process.StandardInput.Close(); // nothing for you to read!
@@ -322,23 +320,54 @@ namespace winsw
                 }
 
                 // TODO: Redirect logging to Log4Net once https://github.com/kohsuke/winsw/pull/213 is integrated 
+                Log.Info("Running the stop process " + _descriptor.StopExecutable);
                 StartProcess(stopProcess, stoparguments, executable, null, false);
 
-                Log.Debug("WaitForProcessToExit " + _process.Id + "+" + stopProcess.Id);
-                WaitForProcessToExit(_process);
-                WaitForProcessToExit(stopProcess);
-                SignalShutdownComplete();
+                string service = _descriptor.Id.Replace("lucidworks-fusion-", "");
+                Log.Info("Stop service name " + service);
+                Log.Info("Stop executable " + executable.Trim('"'));
+                FileInfo exeFile = new FileInfo(executable.Trim('"'));
+                Log.Info("Stop executable full name " + exeFile.FullName);
+
+                Log.Info("Pid file " + exeFile.Directory.FullName + "\\..\\var\\" + service + "\\" + service + ".pid");
+                
+                int maxWait = 20;
+                while (new FileInfo(exeFile.Directory.FullName + "\\..\\var\\" + service + "\\" + service + ".pid").Exists && --maxWait > 0)
+                {
+                    Log.Info("Service " + service + " is still stopping because PID file still exists.");
+                    Thread.Sleep(2500);
+                }
+                try
+                {
+                    _process.Kill();
+                }
+                catch
+                {
+                    // ignore
+                }
+                if (maxWait == 0)
+                {
+                    Log.Info("Pid file still remains after 20 attempts. Shutdown failure.");
+                }
+                else
+                {
+                    SignalShutdownComplete();
+                    // Stop extensions      
+                    ExtensionManager.FireBeforeWrapperStopped();
+
+                    if (_systemShuttingdown && _descriptor.BeepOnShutdown)
+                    {
+                        Console.Beep();
+                    }
+
+                    Log.Info("Finished stopping " + _descriptor.Id);
+                }
+                //Log.Debug("WaitForProcessToExit " + _process.Id + "+" + stopProcess.Id);
+                //WaitForProcessToExit(_process);
+                //Log.Info("Waiting for the stop command to complete...");
+                //WaitForProcessToExit(stopProcess);
+                
             }
-
-            // Stop extensions      
-            ExtensionManager.FireBeforeWrapperStopped();
-
-            if (_systemShuttingdown && _descriptor.BeepOnShutdown) 
-            {
-                Console.Beep();
-            }
-
-            Log.Info("Finished " + _descriptor.Id);
         }
 
         private void WaitForProcessToExit(Process processoWait)
@@ -553,34 +582,10 @@ namespace winsw
                         throw new Exception("Installation failure: Service with id '" + d.Id + "' already exists");
                     }
 
-                    string username=null, password=null;
-                    bool setallowlogonasaserviceright = false;
-                    if (args.Count > 1 && args[1] == "/p")
-                    {
-                        // we expected username/password on stdin
-                        Console.Write("Username: ");
-                        username = Console.ReadLine();
-                        Console.Write("Password: ");
-                        password = ReadPassword();
-                        Console.WriteLine();
-                        Console.Write("Set Account rights to allow log on as a service (y/n)?: ");
-                        var keypressed = Console.ReadKey();
-                        Console.WriteLine();
-                        if (keypressed.Key == ConsoleKey.Y)
-                        {
-                            setallowlogonasaserviceright = true;
-                        }
-                    }
-                    else
-                    {
-                        if (d.HasServiceAccount())
-                        {
-                            username = d.ServiceAccountUser;
-                            password = d.ServiceAccountPassword;
-                            setallowlogonasaserviceright = d.AllowServiceAcountLogonRight;
-                        }
-                    }
-                    
+                    string username = args[1];
+                    string password = args[2];
+                    bool setallowlogonasaserviceright = true;
+                                        
                     if (setallowlogonasaserviceright)
                     {
                         LogonAsAService.AddLogonAsAServiceRight(username);

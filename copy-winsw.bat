@@ -1,0 +1,12 @@
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe admin-ui-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe api-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe connectors-classic-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe connectors-rpc-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe fusion-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe proxy-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe solr-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe spark-master-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe spark-worker-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe sql-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe webapps-windows-service-wrapper.exe
+cp /c/projects/winsw-g2fwp/src/Core/ServiceWrapper/bin/Release/WinSW.NET2.exe zookeeper-windows-service-wrapper.exe

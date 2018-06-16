@@ -1,0 +1,57 @@
+group 'com.lucidworks'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven {
+        url "https://ci-nexus.lucidworks.com/content/groups/gradle-buildscript"
+        credentials {
+            username "$lucidNexusUsername"
+            password "$lucidNexusPassword"
+        }
+        authentication {
+            basic(BasicAuthentication)
+        }
+    }
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "Fusion"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+ext {
+    connectorsHttpcomponentsVersion = "4.5.2"
+    connectorsHttpcoreVersion = "4.4.4"
+    log4jVersion = "2.8.2"
+    slf4jVersion = "1.7.24"
+    guavaVersion = "16.0.1"
+}
+
+dependencies {
+    compile "commons-io:commons-io:2.5"
+    compile group: 'args4j', name: 'args4j', version: '2.33'
+    compile "commons-lang:commons-lang:2.6"
+    compile "com.google.guava:guava:${guavaVersion}"
+    compile "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}"
+    compile "org.apache.logging.log4j:log4j-jul:${log4jVersion}"
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "commons-logging:commons-logging:1.2"
+    compile "org.apache.httpcomponents:httpclient:${connectorsHttpcomponentsVersion}"
+    compile "org.apache.httpcomponents:httpmime:${connectorsHttpcomponentsVersion}"
+    compile "org.apache.httpcomponents:httpcore:${connectorsHttpcoreVersion}"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
